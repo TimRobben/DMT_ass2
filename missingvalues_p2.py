@@ -31,3 +31,9 @@ df_binary_imputed = pd.DataFrame(mode_imputer.fit_transform(df[binary_vars]), co
 df_knn = pd.concat([df_numeric_imputed, df_binary_imputed], axis=1)
 
 df_knn.isnull().sum() # KNN 9 gives best result!
+
+# date_time is deleted from the column so add it back
+old_df = pd.read_csv("traning_df", delimiter = ',')
+new_df = pd.read_csv("data", delimiter=',') # add mean/mode or knn/mode here
+merged_df = pd.merge(new_df, old_df[['srch_id', 'date_time']], on = 'srch_id', how = 'left')
+
