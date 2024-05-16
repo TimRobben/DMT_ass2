@@ -39,20 +39,21 @@ qids_train = train_balanced.groupby("srch_id")["srch_id"].count().to_numpy()
 qids_test = test_data.groupby("srch_id")["srch_id"].count().to_numpy()
 # Split the balanced training data into training and validation sets
 train_set, val_set = train_test_split(train_balanced, test_size=0.2, random_state=42)
-print(train_set[features].shape())
-print(train_set[target].shape())
-print(val_set[features].shape())
-print(val_set[target].shape())
-# model = lgb.LGBMRanker(
-#     objective="lambdarank",
-#     metric="ndcg",
-#     verbose=10
-# )
-# model.fit(
-#     X=train_set[features],
-#     y=train_set[target],
-#     group=qids_train,
-#     eval_set=[(val_set[features], val_set[target])],
-#     eval_group=[qids_test],
-#     eval_at=10,
-# )
+# print(train_set[features].shape)
+# print(train_set[target].shape)
+# print(val_set[features].shape)
+# print(val_set[target].shape)
+
+model = lgb.LGBMRanker(
+    objective="lambdarank",
+    metric="ndcg",
+    verbose=10
+)
+model.fit(
+    X=train_set[features],
+    y=train_set[target],
+    group=qids_train,
+    eval_set=[(val_set[features], val_set[target])],
+    eval_group=[qids_test],
+    eval_at=10,
+)
