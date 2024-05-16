@@ -5,12 +5,19 @@ from sklearn.model_selection import train_test_split
 from sklearn.utils import resample
 from sklearn.metrics import ndcg_score
 
+features = ['site_id', 'visitor_location_country_id', 'prop_country_id', 'prop_id', 
+            'prop_starrating', 'prop_review_score', 'prop_brand_bool', 
+            'search_month', 'search_day', 'search_hour', 'orig_destination_distance',
+            'price_usd', 'srch_room_count', 'srch_saturday_night_bool']
+target = 'relevance_score'
+
 # Split the balanced training data into training and validation sets
 train_set, val_set = train_test_split(train_balanced, test_size=0.2, random_state=42)
 
 # Prepare data for LightGBM
 train_lgb = lgb.Dataset(train_set[features], label=train_set[target], group=train_set.groupby('srch_id').size().to_numpy())
 val_lgb = lgb.Dataset(val_set[features], label=val_set[target], group=val_set.groupby('srch_id').size().to_numpy(), reference=train_lgb)
+
 
 
 # Set parameters for LightGBM
