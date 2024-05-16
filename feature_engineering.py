@@ -14,7 +14,7 @@ import os
 import numpy as np
 import scipy as stats
 
-df = pd.read_csv("E:\VU\VU jaar 1\DMT\Ass_2\missing_imputed_country_id.csv", delimiter=',')
+df = pd.read_csv("E:\VU\VU jaar 1\DMT\Ass_2\mean_mode_imputed_data.csv", delimiter=',')
 df.head()
 
 """1.  Winnaars gebruiken alle numerical features
@@ -115,6 +115,6 @@ scaler = StandardScaler()
 df[cols_to_normalize] = scaler.fit_transform(df[cols_to_normalize])
 
 # Save the updated training data
-df.to_csv("E:\VU\VU jaar 1\DMT\Ass_2\country_id_updated_training_data.csv", index=False)
+df.to_csv("E:\VU\VU jaar 1\DMT\Ass_2\mean_mode_imputed_data_updated.csv", index=False)
 
 df.head()
