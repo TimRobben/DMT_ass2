@@ -35,17 +35,17 @@ df_minority_upsampled = resample(df_minority,
                                  random_state=123) # reproducible results
 
 train_balanced = pd.concat([df_majority, df_minority_upsampled])
-qids_train = train_balanced.groupby("srch_id")["srch_id"].count().to_numpy()
-qids_test = test_data.groupby("srch_id")["srch_id"].count().to_numpy()
 # Split the balanced training data into training and validation sets
 train_set, val_set = train_test_split(train_balanced, test_size=0.2, random_state=42)
-# print(train_set[features].shape)
-# print(train_set[target].shape)
-# print(val_set[features].shape)
-# print(val_set[target].shape)
+
+# Prepare data for LightGBM
+train_lgb = lgb.Dataset(train_set[features], label=train_set[target], group=train_set.groupby('srch_id').size().to_numpy())
+val_lgb = lgb.Dataset(val_set[features], label=val_set[target], group=val_set.groupby('srch_id').size().to_numpy(), reference=train_lgb)
+
 
 model = lgb.LGBMRanker(
     objective="lambdarank",
+    boosting_type = "gbdt",
     metric="ndcg",
     verbose=10
 )
