@@ -103,7 +103,7 @@ df.replace([np.inf, -np.inf], np.nan, inplace=True)
 df.dropna(inplace=True)
 
 # Define columns to exclude from normalization
-cols_to_exclude = ['srch_id', 'date_time', 'site_id', 'visitor_location_country_id', 'prop_country_id', 'prop_id', 'random_bool', 'srch_destination_id', 'comp_rate', 'comp_inv']
+cols_to_exclude = ['srch_id', 'click_bool', 'booking_bool', 'date_time', 'site_id', 'visitor_location_country_id', 'prop_country_id', 'prop_id', 'random_bool', 'srch_destination_id', 'comp_rate', 'comp_inv']
 
 # Columns to be normalized
 cols_to_normalize = df.columns.difference(cols_to_exclude)
