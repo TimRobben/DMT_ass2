@@ -23,7 +23,7 @@ qids_train = training_data.groupby("srch_id")["srch_id"].count().to_numpy()
 
 # Split the training dataset into training and validation sets for booking prediction
 X_booking_train, X_booking_val, y_booking_train, y_booking_val = train_test_split(X_train, y_booking_train, test_size=0.2, random_state=42)
-qids_validation = testing_data.groupby("srch_id")["srch_id"].count().to_numpy()
+qids_validation = y_booking_val.groupby("srch_id")["srch_id"].count().to_numpy()
 
 
 model = lgb.LGBMRanker(
