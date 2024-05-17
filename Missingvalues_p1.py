@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 
-df = pd.read_csv("training_set_VU_DM.csv", delimiter=',')
+df = pd.read_csv("E:\VU\VU jaar 1\DMT\Ass_2\missing_test_set_country_all_columns.csv", delimiter=',')
 
 #Convert columns to numeric data type
 comp_inv_columns = ['comp1_inv', 'comp2_inv', 'comp3_inv', 'comp4_inv', 'comp5_inv', 'comp6_inv', 'comp7_inv', 'comp8_inv']
@@ -23,7 +23,7 @@ df.drop(columns=comp_inv_columns + comp_rate_columns + comp_rate_percent_diff_co
 
 
 # Define columns with high proportions of missing values
-columns_with_high_missing = ['visitor_hist_starrating', 'visitor_hist_adr_usd', 'srch_query_affinity_score',
-                             'gross_bookings_usd']
+columns_with_high_missing = ['visitor_hist_starrating', 'visitor_hist_adr_usd', 'srch_query_affinity_score']
 # Drop columns with high proportions of missing values
 df.drop(columns_with_high_missing, axis=1, inplace=True)
+df.to_csv('E:\VU\VU jaar 1\DMT\Ass_2\missing_test_set_country', index=False)

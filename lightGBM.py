@@ -7,10 +7,11 @@ from sklearn.metrics import ndcg_score
 from relevance_score import relevance_score
 
 # Load the training dataset
-training_data = pd.read_csv("E:\VU\VU jaar 1\DMT\Ass_2\country_id_updated_training_data_int.csv")
+training_data = pd.read_csv("E:\VU\VU jaar 1\DMT\Ass_2\missing_imputed_country_id_without_statf_int.csv")
+print(training_data.columns, training_data.shape, training_data.info())
 training_data = relevance_score(training_data)
 # Load the testing dataset
-testing_data = pd.read_csv("E:\VU\VU jaar 1\DMT\Ass_2\dmt-2024-2nd-assignment\\test_set_VU_DM.csv")
+testing_data = pd.read_csv("E:\VU\VU jaar 1\DMT\Ass_2\missing_test_set_country_without_statf.csv")
 # Feature engineering
 def feature_engineering(data):
     data['search_month'] = pd.to_datetime(data['date_time']).dt.month
@@ -22,8 +23,10 @@ def feature_engineering(data):
 train_data = feature_engineering(training_data)
 test_data = feature_engineering(testing_data)
 # Select features and target variable
-features = train_data.columns.tolist()
-features.remove('relevance_score')
+features = test_data.columns.tolist()
+#features.remove('relevance_score')
+features.remove('date_time')
+features.remove('predicted_score')
 print(features)
 target = 'relevance_score'
 

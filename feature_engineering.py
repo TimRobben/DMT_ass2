@@ -14,7 +14,7 @@ import os
 import numpy as np
 import scipy as stats
 
-df = pd.read_csv("E:\VU\VU jaar 1\DMT\Ass_2\mean_mode_imputed_data.csv", delimiter=',')
+df = pd.read_csv("E:\VU\VU jaar 1\DMT\Ass_2\missing_test_set_country.csv", delimiter=',')
 df.head()
 
 """1.  Winnaars gebruiken alle numerical features
@@ -44,47 +44,47 @@ df['price_rank_country'] = df.groupby(['prop_country_id'])['price_usd'].rank(asc
 df['total_room_stay'] = df['srch_room_count'] * df['srch_length_of_stay']
 
 # define numeric columns to apply statistical functions
-numeric_columns = ['prop_starrating',
-                   'prop_review_score', 'prop_location_score1', 'prop_location_score2',
-                   'prop_log_historical_price', 'price_usd', 'promotion_flag',
-                   'srch_length_of_stay',
-                   'srch_booking_window', 'srch_adults_count', 'srch_children_count',
-                   'srch_room_count', 'orig_destination_distance',
-                   'comp_rate', 'comp_inv', 'comp_rate_percent_diff']
+#numeric_columns = ['prop_starrating',
+                #    'prop_review_score', 'prop_location_score1', 'prop_location_score2',
+                #    'prop_log_historical_price', 'price_usd', 'promotion_flag',
+                #    'srch_length_of_stay',
+                #    'srch_booking_window', 'srch_adults_count', 'srch_children_count',
+                #    'srch_room_count', 'orig_destination_distance',
+                #    'comp_rate', 'comp_inv', 'comp_rate_percent_diff']
 
 # Group by 'srch_id' and compute statistical features
-statistical_features = df.groupby('srch_id')[numeric_columns].agg(['mean', 'median', 'min', 'max'])
+# statistical_features = df.groupby('srch_id')[numeric_columns].agg(['mean', 'median', 'min', 'max'])
 
-# Flatten the multi-level column index
-statistical_features.columns = ['{}_{}'.format(col, stat) for col, stat in statistical_features.columns]
+# # Flatten the multi-level column index
+# statistical_features.columns = ['{}_{}'.format(col, stat) for col, stat in statistical_features.columns]
 
-# Merge the statistical features back into the original dataframe
-df = pd.merge(df, statistical_features, on='srch_id', how='left')
+# # Merge the statistical features back into the original dataframe
+# df = pd.merge(df, statistical_features, on='srch_id', how='left')
 
-df.head()
+# df.head()
 
-"""ADDED POSITION FEATURE
+# """ADDED POSITION FEATURE
 
-"""
+# """
 
-# Step 1: Compute mean position for each property
-mean_position = df.groupby('prop_id')['position'].mean()
+# # Step 1: Compute mean position for each property
+# mean_position = df.groupby('prop_id')['position'].mean()
 
-# Step 2: Compute standard deviation of position for each property
-std_dev_position = df.groupby('prop_id')['position'].std()
+# # Step 2: Compute standard deviation of position for each property
+# std_dev_position = df.groupby('prop_id')['position'].std()
 
-# Step 3: Exclude searches with random ordering
+# # Step 3: Exclude searches with random ordering
 filtered_data = df[df['random_bool'] == 0]
 
-# Step 4: Incorporate prior probability of clicking or booking a property
-click_prob = filtered_data.groupby('prop_id')['click_bool'].mean() / (filtered_data.groupby('prop_id')['click_bool'].count() - 1)
-booking_prob = filtered_data.groupby('prop_id')['booking_bool'].mean() / (filtered_data.groupby('prop_id')['booking_bool'].count() - 1)
+# # Step 4: Incorporate prior probability of clicking or booking a property
+# click_prob = filtered_data.groupby('prop_id')['click_bool'].mean() / (filtered_data.groupby('prop_id')['click_bool'].count() - 1)
+# booking_prob = filtered_data.groupby('prop_id')['booking_bool'].mean() / (filtered_data.groupby('prop_id')['booking_bool'].count() - 1)
 
-# Add the features to the training data
-df['mean_position'] = df['prop_id'].map(mean_position)
-df['std_dev_position'] = df['prop_id'].map(std_dev_position)
-df['click_prob'] = df['prop_id'].map(click_prob)
-df['booking_prob'] = df['prop_id'].map(booking_prob)
+# # Add the features to the training data
+# df['mean_position'] = df['prop_id'].map(mean_position)
+# df['std_dev_position'] = df['prop_id'].map(std_dev_position)
+# df['click_prob'] = df['prop_id'].map(click_prob)
+# df['booking_prob'] = df['prop_id'].map(booking_prob)
 
 # Additional feature: Number of previous search results containing the hotel
 num_prev_results = filtered_data.groupby('prop_id').size() - 1
@@ -103,7 +103,8 @@ df.replace([np.inf, -np.inf], np.nan, inplace=True)
 df.dropna(inplace=True)
 
 # Define columns to exclude from normalization
-cols_to_exclude = ['srch_id', 'click_bool', 'booking_bool', 'date_time', 'site_id', 'visitor_location_country_id', 'prop_country_id', 'prop_id', 'random_bool', 'srch_destination_id', 'comp_rate', 'comp_inv']
+#cols_to_exclude = ['srch_id', 'click_bool', 'booking_bool', 'date_time', 'site_id', 'visitor_location_country_id', 'prop_country_id', 'prop_id', 'random_bool', 'srch_destination_id', 'comp_rate', 'comp_inv']
+cols_to_exclude = ['srch_id', 'date_time', 'site_id', 'visitor_location_country_id', 'prop_country_id', 'prop_id', 'random_bool', 'srch_destination_id', 'comp_rate', 'comp_inv']
 
 # Columns to be normalized
 cols_to_normalize = df.columns.difference(cols_to_exclude)
@@ -115,6 +116,6 @@ scaler = StandardScaler()
 df[cols_to_normalize] = scaler.fit_transform(df[cols_to_normalize])
 
 # Save the updated training data
-df.to_csv("E:\VU\VU jaar 1\DMT\Ass_2\mean_mode_imputed_data_updated.csv", index=False)
+df.to_csv("E:\VU\VU jaar 1\DMT\Ass_2\missing_imputed_country_id_without_statf.csv", index=False)
 
 df.head()

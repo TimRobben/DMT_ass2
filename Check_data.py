@@ -6,8 +6,8 @@ from sklearn.metrics import ndcg_score
 from relevance_score import relevance_score
 
 # Load the training dataset
-training_data = pd.read_csv("E:/VU/VU jaar 1/DMT/Ass_2/country_id_updated_training_data.csv")
-training_data = relevance_score(training_data)
+training_data = pd.read_csv("E:\VU\VU jaar 1\DMT\Ass_2\missing_test_set_country_without_statf.csv")
+#training_data = relevance_score(training_data)
 
 # Feature engineering
 def feature_engineering(data):
@@ -19,10 +19,11 @@ def feature_engineering(data):
 
 train_data = feature_engineering(training_data)
 #test_data = feature_engineering(testing_data)
-train_data.iloc[:, 33:] = train_data.iloc[:, 33:].astype(int)
+train_data.iloc[:, 27:] = train_data.iloc[:, 27:].astype(int)
 
 # Save the DataFrame to a CSV file
-train_data.to_csv('E:\VU\VU jaar 1\DMT\Ass_2\country_id_updated_training_data_int.csv', index=False)
+#train_data.to_csv('E:\VU\VU jaar 1\DMT\Ass_2\missing_test_set_country_without_statf_int.csv', index=False)
+train_data.columns
 train_data.info()
 
 # features = training_data.columns.tolist()
