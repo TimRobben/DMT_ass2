@@ -30,6 +30,8 @@ features.remove('predicted_score')
 print(features)
 target = 'relevance_score'
 
+y_true = np.expand_dims(val_set[target], axis=1)
+
 # Balance the dataset by upsampling the minority class
 df_majority = train_data[train_data[target] == 0]
 df_minority = train_data[train_data[target] > 0]
@@ -76,7 +78,7 @@ for learning_rate in params['learning_rate']:
                                   num_boost_round=1000)
 
                 # Evaluate the model on the validation set
-                val_ndcg = ndcg_score(val_set[target], model.predict(val_set[features], num_iteration=model.best_iteration))
+                val_ndcg = ndcg_score(y_true, model.predict(val_set[features], num_iteration=model.best_iteration))
 
                 # Update best parameters if the NDCG score improves
                 if val_ndcg > best_ndcg:
@@ -95,3 +97,4 @@ submission = test_data[['srch_id', 'prop_id', 'predicted_score']]
 submission = submission.sort_values(by=['srch_id', 'predicted_score'], ascending=[True, False])
 submission = submission[['srch_id', 'prop_id']]
 submission.to_csv('lambdamart_submission.csv', index=False)
+
