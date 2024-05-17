@@ -1,0 +1,27 @@
+import pandas as pd
+from sklearn.feature_selection import SelectKBest, f_regression
+
+df = pd.read_csv("training_set_VU_DM.csv", delimiter=',')
+
+# Assuming X is your DataFrame containing features and y is your target variable
+X = df.drop(columns=['relevance_score'])  # Remove the target variable column to get features
+y = df['relevance_score']
+
+# Create SelectKBest instance with f_regression score function
+k = 50  # Specify the number of top features you want to select
+selector = SelectKBest(score_func=f_regression, k=k)
+
+# Fit selector to your data
+selector.fit(X, y)
+
+# Get indices of selected features
+selected_feature_indices = selector.get_support(indices=True)
+
+# Get names of selected features
+selected_features = X.columns[selected_feature_indices]
+
+# Transform original DataFrame to retain only selected features
+X_selected = selector.transform(X)
+
+# Convert X_selected to DataFrame with selected features
+X_selected_df = pd.DataFrame(X_selected, columns=selected_features)
