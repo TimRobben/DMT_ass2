@@ -7,11 +7,25 @@ from sklearn.metrics import ndcg_score
 from relevance_score import relevance_score
 
 # Load the training dataset
-training_data = pd.read_csv("E:\VU\VU jaar 1\DMT\Ass_2\missing_imputed_country_id_without_statf_int.csv")
-print(training_data.columns, training_data.shape, training_data.info())
-training_data = relevance_score(training_data)
+training_data = pd.read_csv("E:\VU\VU jaar 1\DMT\Ass_2\\train_converted_to_float32.csv")
+#print(training_data.columns, training_data.shape, training_data.info())
+
 # Load the testing dataset
-testing_data = pd.read_csv("E:\VU\VU jaar 1\DMT\Ass_2\missing_test_set_country_without_statf.csv")
+testing_data = pd.read_csv("E:\VU\VU jaar 1\DMT\Ass_2\\test_converted_to_float32.csv")
+
+
+# Identify columns with float64 data type inferred by pandas (these should be the original float32 columns)
+float64_columns_train = training_data.select_dtypes(include=['float64']).columns
+float64_columns_test = testing_data.select_dtypes(include=['float64']).columns
+# Create a dtype dictionary to enforce float32 for these columns
+dtype_dict = {col: 'float32' for col in float64_columns_train}
+dtype_dict = {col: 'float32' for col in float64_columns_test}
+# Read the CSV file again, this time with the dtype dictionary
+training_data = pd.read_csv("E:\VU\VU jaar 1\DMT\Ass_2\\train_converted_to_float32.csv", dtype=dtype_dict)
+testing_data = pd.read_csv("E:\VU\VU jaar 1\DMT\Ass_2\\test_converted_to_float32.csv", dtype=dtype_dict)
+training_data = relevance_score(training_data)
+training_data.info()
+testing_data.info()
 # Feature engineering
 def feature_engineering(data):
     data['search_month'] = pd.to_datetime(data['date_time']).dt.month
@@ -27,19 +41,22 @@ features = test_data.columns.tolist()
 #features.remove('relevance_score')
 features.remove('date_time')
 features.remove('predicted_score')
-print(features)
+features.remove('promotion_flag')
+features.remove('srch_saturday_night_bool')
+features.remove('prop_location_score2')
+#print(features)
 target = 'relevance_score'
 
 # Balance the dataset by upsampling the minority class
 df_majority = train_data[train_data[target] == 0]
 df_minority = train_data[train_data[target] > 0]
 
-df_minority_upsampled = resample(df_minority, 
-                                 replace=True,    # sample with replacement
-                                 n_samples=len(df_majority), # to match majority class
-                                 random_state=123) # reproducible results
+df_majority_downsampled = resample(df_majority,
+                                   replace=False,    # sample without replacement
+                                   n_samples=len(df_minority),  # to match minority class
+                                   random_state=123)  # reproducible results
 
-train_balanced = pd.concat([df_majority, df_minority_upsampled])
+train_balanced = pd.concat([df_majority_downsampled, df_minority])
 print("Woohoo we zijn voorbij het voorbereiden!!!!")
 # Split the balanced training data into training and validation sets
 train_set, val_set = train_test_split(train_balanced, test_size=0.2, random_state=42)
@@ -56,12 +73,13 @@ params = {
     'metric': 'ndcg',
     'ndcg_eval_at': [5],
     'boosting_type': 'gbdt',
-    'learning_rate': 0.05,
-    'num_leaves': 31,
-    'feature_fraction': 0.9,
-    'bagging_fraction': 0.8,
-    'bagging_freq': 5,
-    'verbosity': -1
+    'learning_rate': 0.01,
+    'num_leaves': 28,
+    'feature_fraction': 0.927,
+    'bagging_fraction': 0.985,
+    'bagging_freq': 18,
+    'verbosity': -1,
+    'max_depth': 9
 }
 
 # Define a callback for early stopping
